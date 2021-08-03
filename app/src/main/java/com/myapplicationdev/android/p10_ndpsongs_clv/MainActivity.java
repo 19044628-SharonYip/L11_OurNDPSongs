@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText etTitle, etSingers, etYear;
     Button btnInsert, btnShowList;
-    RadioGroup rg;
+    RatingBar rbStar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         etYear = findViewById(R.id.etYear);
         btnInsert = findViewById(R.id.btnInsertSong);
         btnShowList = findViewById(R.id.btnShowList);
-        rg = findViewById(R.id.rgStars);
+        rbStar=findViewById(R.id.ratingBarStar);
 
         btnInsert.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,23 +44,27 @@ public class MainActivity extends AppCompatActivity {
 
                 String year_str = etYear.getText().toString().trim();
                 int year = Integer.valueOf(year_str);
-                int stars = getStars();
-
+                //int stars = getStars();
+                int rating = (int) rbStar.getRating();
                 DBHelper dbh = new DBHelper(MainActivity.this);
-                long result = dbh.insertSong(title, singers, year, stars);
+                long result = dbh.insertSong(title, singers, year, rating);
+                dbh.close();
+
 
                 if (result != -1) {
                     Toast.makeText(MainActivity.this, "Song inserted", Toast.LENGTH_LONG).show();
                     etTitle.setText("");
                     etSingers.setText("");
                     etYear.setText("");
+                    rbStar.setRating(0);
                 } else {
                     Toast.makeText(MainActivity.this, "Insert failed", Toast.LENGTH_LONG).show();
                 }
 
-
             }
         });
+
+
 
         btnShowList.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,26 +77,5 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private int getStars() {
-        int stars = 1;
-        switch (rg.getCheckedRadioButtonId()) {
-            case R.id.radio1:
-                stars = 1;
-                break;
-            case R.id.radio2:
-                stars = 2;
-                break;
-            case R.id.radio3:
-                stars = 3;
-                break;
-            case R.id.radio4:
-                stars = 4;
-                break;
-            case R.id.radio5:
-                stars = 5;
-                break;
-        }
-        return stars;
-    }
 
 }
